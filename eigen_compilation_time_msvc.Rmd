@@ -1,0 +1,61 @@
+---
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Eigen Compile times (MSVC)
+
+The following commit was tested with msbuild version `16.1.76.45076` (MSVC 2019 V16.1.3)
+```
+commit 716839ea79291efe769ee56ebdd783b9d2b3d51f (HEAD -> master, origin/master, origin/branches/default, origin/HEAD)
+Author: Rasmus Munk Larsen <rmlarsen@google.com>
+Date:   Wed Jun 5 16:42:27 2019 -0700
+
+    Make is_valid_index_type return false for float and double when EIGEN_HAS_TYPE_TRAITS is off.
+```
+
+```{r, message=FALSE, warning=FALSE, output=FALSE}
+library(hms)
+library(knitr)
+library(kableExtra)
+
+# Extract build times
+system(paste("cat ./data/eigen_build_msvc.log ",
+             "| grep Elapsed ",
+             "| sed 's/>Time Elapsed /,/' ",
+             "> data/times.csv"))
+times = read.csv("data/times.csv", header = FALSE)
+times <- setNames(times, c("num", "time"))
+
+# Extract test names
+system(paste("cat ./data/eigen_build_msvc.log",
+             "| grep '>------ Build started' ",
+             "| sed 's/>------ Build started: Project: /,/'",
+             "> data/names.csv"))
+names = read.csv("data/names.csv", header = FALSE)
+names <- setNames(names, c("num", "test", "config"))
+
+# Extract build status
+system(paste("cat ./data/eigen_build_msvc.log",
+             "| grep 'Build FAILED' ",
+             "| sed 's/>Build /,/' ",
+             "> data/failed.csv"))
+failed = read.csv("data/failed.csv", header = FALSE)
+failed <- setNames(failed, c("num", "failed"))
+
+df <- merge(names, times, by = c("num"))
+df <- merge(failed, df, by = c("num"), all = TRUE)
+df$status <- ifelse(is.na(df$failed), 
+                    '<span style=" color: green !important;" >OK</span>', 
+                    '<span style=" color: red !important;" >FAILED</span>')
+df$time_s <- as.integer(as.hms(strtrim(df$time, 8)))
+
+# sort by time:
+df <- df[order(-df$time_s),]
+
+kable( df[, c("test", "status", "time", "time_s")], escape=FALSE) %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))
+```

@@ -6,9 +6,18 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Eigen Compile times
+## Eigen Compile times (GCC)
 
-This table was generated with the following script.
+The following commit was tested with `g++ (GCC) 7.2.1 20170829`
+
+```
+commit 716839ea79291efe769ee56ebdd783b9d2b3d51f (HEAD -> master, origin/master, origin/branches/default, origin/HEAD)
+Author: Rasmus Munk Larsen <rmlarsen@google.com>
+Date:   Wed Jun 5 16:42:27 2019 -0700
+
+    Make is_valid_index_type return false for float and double when EIGEN_HAS_TYPE_TRAITS is off.
+```
+The timings were generated with the following script.
 
 ```sh
 # Clone Eigen

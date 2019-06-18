@@ -8,7 +8,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Eigen Compile times (MSVC)
 
-The following commit was tested with msbuild version `16.1.76.45076` (MSVC 2019 V16.1.3)
+The following commit was tested with msbuild version `15.9.21.664` (MSVC 2017 V15.9.13)
 ```
 commit 716839ea79291efe769ee56ebdd783b9d2b3d51f (HEAD -> master, origin/master, origin/branches/default, origin/HEAD)
 Author: Rasmus Munk Larsen <rmlarsen@google.com>
